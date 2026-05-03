@@ -1,0 +1,39 @@
+"""Analyze predicted proteins: molecular weight, pI, hydrophobicity, AA composition."""
+
+from collections import Counter
+from Bio.SeqUtils.ProtParam import ProteinAnalysis
+
+
+def analyze_protein(protein_seq: str) -> dict:
+    """Compute properties of a single protein sequence.
+
+    Drops any '*' characters (translated stops) before analysis.
+    """
+    clean = protein_seq.replace("*", "")
+    if len(clean) < 5:
+        return {
+            "length": len(clean),
+            "mw_kda": None,
+            "isoelectric_point": None,
+            "gravy": None,
+            "instability": None,
+        }
+    pa = ProteinAnalysis(clean)
+    return {
+        "length": len(clean),
+        "mw_kda": round(pa.molecular_weight() / 1000, 2),
+        "isoelectric_point": round(pa.isoelectric_point(), 2),
+        "gravy": round(pa.gravy(), 3),  # hydrophobicity score (higher = more hydrophobic)
+        "instability": round(pa.instability_index(), 2),
+    }
+
+
+def aa_composition(proteins: list[str]) -> dict:
+    """Aggregate amino acid frequencies across all predicted proteins."""
+    counter: Counter = Counter()
+    for p in proteins:
+        counter.update(p.replace("*", ""))
+    total = sum(counter.values())
+    if total == 0:
+        return {}
+    return {aa: round(count / total, 4) for aa, count in counter.most_common()}

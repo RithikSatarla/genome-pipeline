@@ -1,0 +1,8 @@
+{
+  "genome_id": "DEMO_SYN_001",
+  "length_bp": 30000,
+  "gc_content": 0.5142,
+  "n_orfs": 36,
+  "longest_orf_aa": 400,
+  "min_aa_threshold": 100
+}
